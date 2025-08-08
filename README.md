@@ -1,8 +1,3 @@
-[![Top 5 Responsibility Matrix Templates with Samples and Examples](https://tse2.mm.bing.net/th/id/OIP.WFUcrCsHfA0t4lBfzadPtgHaEK?r=0\&pid=Api)](https://www.slideteam.net/blog/top-5-responsibility-matrix-templates-with-samples-and-examples)
-
-Here's a README for your GitHub project, **Accountability Daemon**:
-
----
 
 # Accountability Daemon
 
@@ -48,4 +43,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Feel free to modify this README to better fit your project's specifics or add additional sections as needed!
