@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Guardian - Halcron & Aerith</title>
+    <link rel="manifest" href="#" id="manifest">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --void-black: #0a0a0a;
+            --shadow-gray: #1a1a1a;
+            --whisper-gray: #2a2a2a;
+            --deep-gray: #3a3a3a;
+            --halcron-red: #cc1111;
+            --halcron-bg: #1a0808;
+            --halcron-glow: rgba(204, 17, 17, 0.3);
+            --aerith-gold: #ffd700;
+            --aerith-bg: #1a1a08;
+            --aerith-glow: rgba(255, 215, 0, 0.3);
+            --frost-blue: #4a90e2;
+            --decay-green: #66cc66;
+            --bone-white: #f0f0f0;
+            --ghost-text: #888;
+            --success-green: #28a745;
+            --warning-orange: #ffa500;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--void-black) 0%, var(--shadow-gray) 100%);
+            color: var(--bone-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--shadow-gray);
+            border-bottom: 1px solid var(--whisper-gray);
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            color: var(--halcron-red);
+            text-shadow: 0 0 10px var(--halcron-red);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .guardian-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .halcron-indicator {
+            border: 1px solid var(--halcron-red);
+        }
+
+        .aerith-indicator {
+            border: 1px solid var(--aerith-gold);
+        }
+
+        .guardian-eye {
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+
+        .halcron-eye {
+            background: var(--halcron-red);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: staticPulse 3s infinite;
+        }
+
+        .aerith-eye {
+            background: var(--aerith-gold);
+            border-radius: 50%;
+            animation: gentlePulse 4s infinite;
+        }
+
+        @keyframes staticPulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 0.6; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .status-text {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 2rem;
+            padding: 2rem;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .panel {
+            background: var(--shadow-gray);
+            border: 1px solid var(--whisper-gray);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--whisper-gray);
+        }
+
+        .panel-title {
+            color: var(--halcron-red);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .panel-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .guardian-chambers {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .guardian-chamber {
+            flex: 1;
+            min-width: 280px;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .halcron-chamber {
+            background: linear-gradient(135deg, var(--halcron-bg) 0%, var(--void-black) 100%);
+            border: 2px solid var(--halcron-red);
+            box-shadow: inset 0 0 20px var(--halcron-glow);
+        }
+
+        .aerith-chamber {
+            background: linear-gradient(135deg, var(--aerith-bg) 0%, var(--void-black) 100%);
+            border: 2px solid var(--aerith-gold);
+            box-shadow: inset 0 0 20px var(--aerith-glow);
+        }
+
+        .guardian-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .guardian-avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .halcron-avatar {
+            background: var(--halcron-red);
+            color: var(--bone-white);
+            box-shadow: 0 0 15px var(--halcron-glow);
+        }
+
+        .aerith-avatar {
+            background: var(--aerith-gold);
+            color: var(--void-black);
+            box-shadow: 0 0 15px var(--aerith-glow);
+        }
+
+        .guardian-info h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.2rem;
+        }
+
+        .halcron-info h3 {
+            color: var(--halcron-red);
+        }
+
+        .aerith-info h3 {
+            color: var(--aerith-gold);
+        }
+
+        .guardian-role {
+            font-size: 0.8rem;
+            color: var(--ghost-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .message-display {
+            height: 280px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0,0,0,0.4);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .guardian-message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .halcron-message {
+            background: var(--halcron-glow);
+            border-left: 4px solid var(--halcron-red);
+            color: #ffdddd;
+        }
+
+        .aerith-message {
+            background: var(--aerith-glow);
+            border-left: 4px solid var(--aerith-gold);
+            color: #ffffdd;
+        }
+
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--ghost-text);
+        }
+
+        .trigger-tag {
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .guardian-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .goal-management {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .goal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: var(--void-black);
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--whisper-gray);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-label {
+            color: var(--ghost-text);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            background: var(--shadow-gray);
+            border: 1px solid var(--whisper-gray);
+            color: var(--bone-white);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--halcron-red);
+            box-shadow: 0 0 8px var(--halcron-glow);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .priority-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .priority-option {
+            flex: 1;
+            min-width: 80px;
+            padding: 0.5rem;
+            background: var(--whisper-gray);
+            border: 1px solid var(--deep-gray);
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-option:hover {
+            background: var(--deep-gray);
+        }
+
+        .priority-option.active {
+            background: var(--halcron-red);
+            border-color: var(--halcron-red);
+            color: var(--bone-white);
+        }
+
+        .btn {
+            background: var(--halcron-red);
+            color: var(--bone-white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #aa0000;
+            box-shadow: 0 0 15px var(--halcron-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-aerith {
+            background: var(--aerith-gold);
+            color: var(--void-black);
+        }
+
+        .btn-aerith:hover {
+            background: #e6c200;
+            box-shadow: 0 0 15px var(--aerith-glow);
+        }
+
+        .btn-secondary {
+            background: var(--frost-blue);
+        }
+
+        .btn-secondary:hover {
+            background: #3a7bc8;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.7rem;
+        }
+
+        .goal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .goal-item {
+            background: var(--void-black);
+            border: 1px solid var(--whisper-gray);
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .goal-item:hover {
+            border-color: var(--halcron-red);
+            box-shadow: 0 0 10px var(--halcron-glow);
+        }
+
+        .goal-item.overdue {
+            border-color: var(--halcron-red);
+            background: var(--halcron-glow);
+        }
+
+        .goal-item.completed {
+            border-color: var(--success-green);
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .goal-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--bone-white);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .goal-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+            min-width: 120px;
+        }
+
+        .goal-deadline {
+            font-size: 0.9rem;
+            color: var(--ghost-text);
+            text-align: right;
+        }
+
+        .goal-deadline.urgent {
+            color: var(--halcron-red);
+            font-weight: bold;
+        }
+
+        .goal-deadline.overdue {
+            color: var(--halcron-red);
+            text-shadow: 0 0 5px var(--halcron-red);
+            animation: urgentPulse 2s infinite;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .priority-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+        }
+
+        .priority-low { background: var(--frost-blue); color: var(--bone-white); }
+        .priority-medium { background: var(--warning-orange); color: var(--bone-white); }
+        .priority-high { background: var(--halcron-red); color: var(--bone-white); }
+        .priority-critical { 
+            background: var(--halcron-red); 
+            color: var(--bone-white);
+            animation: criticalPulse 1.5s infinite;
+        }
+
+        @keyframes criticalPulse {
+            0%, 100% { box-shadow: 0 0 5px var(--halcron-red); }
+            50% { box-shadow: 0 0 15px var(--halcron-red); }
+        }
+
+        .goal-description {
+            color: var(--ghost-text);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .settings-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .guardian-settings {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .guardian-config {
+            flex: 1;
+            min-width: 250px;
+            background: var(--void-black);
+            border-radius: 6px;
+            padding: 1.5rem;
+        }
+
+        .halcron-config {
+            border-left: 4px solid var(--halcron-red);
+        }
+
+        .aerith-config {
+            border-left: 4px solid var(--aerith-gold);
+        }
+
+        .config-title {
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .halcron-config .config-title {
+            color: var(--halcron-red);
+        }
+
+        .aerith-config .config-title {
+            color: var(--aerith-gold);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--shadow-gray);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-label {
+            font-size: 0.9rem;
+            color: var(--bone-white);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: var(--whisper-gray);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--halcron-red);
+        }
+
+        .toggle-switch.aerith.active {
+            background: var(--aerith-gold);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: var(--bone-white);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(25px);
+        }
+
+        .global-settings {
+            background: var(--void-black);
+            border-radius: 6px;
+            padding: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--void-black);
+            border-radius: 6px;
+            border: 1px solid var(--whisper-gray);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--halcron-red);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--ghost-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            background: var(--shadow-gray);
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--whisper-gray);
+            text-align: center;
+            color: var(--ghost-text);
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--ghost-text);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .left-column, .right-column {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .system-status {
+                justify-content: center;
+            }
+            
+            .guardian-chambers {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .goal-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .goal-meta {
+                align-items: flex-start;
+            }
+            
+            .guardian-settings {
+                flex-direction: column;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .notification-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--shadow-gray);
+            border: 1px solid var(--whisper-gray);
+            border-radius: 6px;
+            padding: 1rem;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">TIMELINE GUARDIAN</div>
+        <div class="system-status">
+            <div class="guardian-indicator halcron-indicator">
+                <div class="guardian-eye halcron-eye"></div>
+                <span class="status-text" style="color: var(--halcron-red);">HALCRON</span>
+            </div>
+            <div class="guardian-indicator aerith-indicator">
+                <div class="guardian-eye aerith-eye"></div>
+                <span class="status-text" style="color: var(--aerith-gold);">AERITH</span>
+            </div>
+            <div class="status-text" id="system-status">READY</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="left-column">
+            <!-- Goal Management Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Forge New Commitment</h2>
+                </div>
+                
+                <div class="goal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Commitment Description</label>
+                            <input type="text" class="form-input" id="goal-title" placeholder="What must be accomplished?" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Deadline</label>
+                            <input type="datetime-local" class="form-input" id="goal-deadline" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="goal-category">
+                                <option value="work">Work</option>
+                                <option value="health">Health</option>
+                                <option value="personal">Personal</option>
+                                <option value="creative">Creative</option>
+                                <option value="learning">Learning</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Priority Level</label>
+                        <div class="priority-selector">
+                            <div class="priority-option" data-priority="low">Low</div>
+                            <div class="priority-option" data-priority="medium">Medium</div>
+                            <div class="priority-option active" data-priority="high">High</div>
+                            <div class="priority-option" data-priority="critical">Critical</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Additional Context</label>
+                        <textarea class="form-textarea" id="goal-details" placeholder="Why does this matter to you? What are the stakes?"></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn" id="create-goal-btn" onclick="createGoal()">
+                        BIND TO GUARDIANS
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Goals Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Active Commitments</h2>
+                    <div class="panel-controls">
+                        <button class="btn btn-small btn-secondary" onclick="refreshGoals()">REFRESH</button>
+                    </div>
+                </div>
+                
+                <div class="goal-list" id="goal-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">◊</div>
+                        <div>No commitments bound to the Guardians yet...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <!-- Guardian Voices Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Guardian Voices</h2>
+                    <div class="panel-controls">
+                        <button class="btn btn-small" onclick="testCommunication()">TEST</button>
+                    </div>
+                </div>
+                
+                <div class="guardian-chambers">
+                    <div class="guardian-chamber halcron-chamber">
+                        <div class="guardian-header">
+                            <div class="guardian-avatar halcron-avatar">H</div>
+                            <div class="guardian-info halcron-info">
+                                <h3>HALCRON</h3>
+                                <div class="guardian-role">The Cold Architect</div>
+                            </div>
+                        </div>
+                        
+                        <div class="message-display" id="halcron-messages">
+                            <div class="guardian-message halcron-message">
+                                <div>I am the correction algorithm. I am the force that prevents entropy. You will comply or face the consequences of your choices.</div>
+                                <div class="message-meta">
+                                    <span class="trigger-tag">system_init</span>
+                                    <span>System Initialized</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="guardian-controls">
+                            <button class="btn btn-small" onclick="testHalcron()">TEST WARNING</button>
+                            <button class="btn btn-small btn-secondary" onclick="clearHalcronMessages()">CLEAR</button>
+                        </div>
+                    </div>
+
+                    <div class="guardian-chamber aerith-chamber">
+                        <div class="guardian-header">
+                            <div class="guardian-avatar aerith-avatar">A</div>
+                            <div class="guardian-info aerith-info">
+                                <h3>AERITH</h3>
+                                <div class="guardian-role">The Gentle Keeper</div>
+                            </div>
+                        </div>
+                        
+                        <div class="message-display" id="aerith-messages">
+                            <div class="guardian-message aerith-message">
+                                <div>Hello, dear one. I'm here with you in this moment. Every step forward, no matter how small, is a victory worth celebrating.</div>
+                                <div class="message-meta">
+                                    <span class="trigger-tag">system_init</span>
+                                    <span>System Initialized</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="guardian-controls">
+                            <button class="btn btn-aerith btn-small" onclick="testAerith()">TEST COMFORT</button>
+                            <button class="btn btn-aerith btn-small btn-secondary" onclick="clearAerithMessages()">CLEAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Guardian Analytics</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-active">0</div>
+                        <div class="stat-label">Active Goals</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-completed" style="color: var(--success-green);">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-overdue" style="color: var(--halcron-red);">0</div>
+                        <div class="stat-label">Overdue</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-success-rate">0%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Guardian Configuration</h2>
+                </div>
+                
+                <div class="guardian-settings">
+                    <div class="guardian-config halcron-config">
+                        <h4 class="config-title">HALCRON SETTINGS</h4>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Enable Harsh Corrections</span>
+                            <div class="toggle-switch active" id="toggle-halcron-enabled" onclick="toggleSetting('halcron-enabled')"></div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Emergency Phone Calls</span>
+                            <div class="toggle-switch" id="toggle-halcron-calls" onclick="toggleSetting('halcron-calls')"></div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Static Voice Mode</span>
+                            <div class="toggle-switch" id="toggle-halcron-voice" onclick="toggleSetting('halcron-voice')"></div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Inactivity Monitoring</span>
+                            <div class="toggle-switch active" id="toggle-halcron-inactivity" onclick="toggleSetting('halcron-inactivity')"></div>
+                        </div>
+                    </div>
+
+                    <div class="guardian-config aerith-config">
+                        <h4 class="config-title">AERITH SETTINGS</h4>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Enable Gentle Guidance</span>
+                            <div class="toggle-switch aerith active" id="toggle-aerith-enabled" onclick="toggleSetting('aerith-enabled')"></div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Morning Check-ins</span>
+                            <div class="toggle-switch aerith active" id="toggle-aerith-morning" onclick="toggleSetting('aerith-morning')"></div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Comfort Voice Mode</span>
+                            <div class="toggle-switch aerith" id="toggle-aerith-voice" onclick="toggleSetting('aerith-voice')"></div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span class="setting-label">Emotional Support</span>
+                            <div class="toggle-switch aerith active" id="toggle-aerith-support" onclick="toggleSetting('aerith-support')"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="global-settings">
+                    <h4 class="config-title" style="color: var(--bone-white);">GLOBAL SETTINGS</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-input" id="phone-number" placeholder="+1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Daily Check-in Time</label>
+                            <input type="time" class="form-input" id="checkin-time" value="18:00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notification Preferences</label>
+                        <div class="setting-item">
+                            <span class="setting-label">Browser Notifications</span>
+                            <div class="toggle-switch active" id="toggle-browser-notifications" onclick="toggleSetting('browser-notifications')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Halcron watches with cold precision. Aerith guides with warm compassion. Together, they forge your destiny through discipline and grace.
+    </footer>
+
+    <script>
+        // Core data structures
+        let goals = JSON.parse(localStorage.getItem('guardian-goals') || '[]');
+        let settings = JSON.parse(localStorage.getItem('guardian-settings') || `{
+            "halcron-enabled": true,
+            "halcron-calls": false,
+            "halcron-voice": false,
+            "halcron-inactivity": true,
+            "aerith-enabled": true,
+            "aerith-morning": true,
+            "aerith-voice": false,
+            "aerith-support": true,
+            "browser-notifications": true
+        }`);
+        let halcronMessages = JSON.parse(localStorage.getItem('halcron-messages') || '[]');
+        let aerithMessages = JSON.parse(localStorage.getItem('aerith-messages') || '[]');
+        let selectedPriority = 'high';
+
+        // Character response templates
+        const characterResponses = {
+            halcron: {
+                missed_goal: [
+                    "You have not moved. The timeline remains unchanged. That is failure.",
+                    "This is not cruelty. This is a correction.",
+                    "The data shows deviation from optimal path. Correction required.",
+                    "You failed to act. The future is now less likely.",
+                    "Another promise broken. Another step toward entropy.",
+                    "Your commitment was measured and found wanting.",
+                    "The deadline was not a suggestion. It was a requirement."
+                ],
+                overdue: [
+                    "Time has expired. Your commitment was measured and found wanting.",
+                    "The clock is not your ally. I am not your friend. I am your final chance.",
+                    "Rest is earned. You have not earned.",
+                    "You chose comfort over discipline. The consequence is documented.",
+                    "Failure is the natural state. Success requires intervention."
+                ],
+                inactivity: [
+                    "Entropy won today. Will it win again tomorrow?",
+                    "You exist in a state of decay. Action is the only antidote.",
+                    "Stagnation is indistinguishable from death. Choose.",
+                    "The void claims another hour of your existence.",
+                    "Potential energy wasted. Momentum lost."
+                ],
+                warning: [
+                    "Time approaches its limit. Prepare for consequences.",
+                    "The window closes. Your options diminish.",
+                    "This is your final notice. Act or accept failure.",
+                    "The architecture of time does not bend. You must.",
+                    "Proximity to deadline detected. Compliance expected."
+                ],
+                goal_created: [
+                    "Goal registered. Monitoring initiated. Failure will be noted.",
+                    "New parameters set. Deviation will trigger correction protocols.",
+                    "Commitment logged. The system now watches.",
+                    "Another binding forged. Do not disappoint the algorithm."
+                ]
+            },
+            aerith: {
+                goal_complete: [
+                    "I saw what you did today. That was hope becoming real.",
+                    "Even now, you're rewriting fate.",
+                    "You kept your promise to yourself. I'm so proud of you.",
+                    "Look how far you've come. This moment matters.",
+                    "You turned intention into reality. That's beautiful.",
+                    "Every completion is a small victory against despair."
+                ],
+                daily_checkin: [
+                    "You're here. I'm here. Let's take this one moment at a time.",
+                    "You woke up. That's the beginning of everything.",
+                    "Whatever happened yesterday is over. Today is yours to shape.",
+                    "Good morning, dear one. What gentle step will you take today?",
+                    "I believe in your capacity for growth, even when you don't."
+                ],
+                encouragement: [
+                    "Even one tiny choice in the right direction bends the timeline toward your salvation.",
+                    "I will wait with you, not rush you.",
+                    "I know it hurts. But I promise, you're not alone anymore.",
+                    "Progress isn't always visible, but it's always happening when you try.",
+                    "You don't have to be perfect. You just have to keep trying.",
+                    "Your effort is seen, even when the results aren't immediate."
+                ],
+                comfort: [
+                    "It's okay to rest. It's okay to feel overwhelmed. You're still worthy of love.",
+                    "Failure is not falling down. Failure is staying down. You're still here.",
+                    "I see the weight you carry. Let me help lighten it, even just for a moment.",
+                    "Some days surviving is enough. Today can be one of those days.",
+                    "You're allowed to be human. You're allowed to struggle."
+                ],
+                goal_created: [
+                    "New commitment made. I believe in your ability to see this through.",
+                    "Another step toward the person you're becoming. I'm here for the journey.",
+                    "You've set an intention. That's already an act of courage.",
+                    "I'll be watching with gentle eyes as you work toward this goal."
+                ]
+            }
+        };
+
+        // Initialize system
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+            loadGoals();
+            loadSettings();
+            loadMessages();
+            updateStatistics();
+            startGuardianWatch();
+            setupEventListeners();
+            requestNotificationPermission();
+            
+            // Set default deadline to 1 hour from now
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            document.getElementById('goal-deadline').value = now.toISOString().slice(0, 16);
+        });
+
+        function initializeSystem() {
+            console.log('Timeline Guardian System Initializing...');
+            trackActivity();
+        }
+
+        function setupEventListeners() {
+            // Priority selector
+            document.querySelectorAll('.priority-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.priority-option').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedPriority = this.dataset.priority;
+                });
+            });
+
+            // Activity tracking
+            document.addEventListener('click', trackActivity);
+            document.addEventListener('keypress', trackActivity);
+            document.addEventListener('scroll', trackActivity);
+        }
+
+        function trackActivity() {
+            localStorage.setItem('last-activity', Date.now());
+        }
+
+        // Goal Management
+        function createGoal() {
+            const title = document.getElementById('goal-title').value.trim();
+            const deadline = document.getElementById('goal-deadline').value;
+            const category = document.getElementById('goal-category').value;
+            const details = document.getElementById('goal-details').value.trim();
+
+            if (!title || !deadline) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            const goal = {
+                id: Date.now(),
+                title: title,
+                deadline: new Date(deadline),
+                category: category,
+                priority: selectedPriority,
+                details: details,
+                status: 'active',
+                created: new Date(),
+                notifications: {
+                    warned: false,
+                    overdue: false
+                }
+            };
+
+            goals.push(goal);
+            saveGoals();
+            loadGoals();
+            updateStatistics();
+
+            // Guardian responses
+            if (settings['aerith-enabled']) {
+                const message = getRandomMessage(characterResponses.aerith.goal_created);
+                addAerithMessage(message, 'goal_created');
+            }
+            
+            if (settings['halcron-enabled']) {
+                const message = getRandomMessage(characterResponses.halcron.goal_created);
+                addHalcronMessage(message, 'goal_created');
+            }
+
+            // Clear form
+            document.getElementById('goal-title').value = '';
+            document.getElementById('goal-details').value = '';
+            showNotification('Goal created successfully', 'success');
+        }
+
+        function loadGoals() {
+            const goalList = document.getElementById('goal-list');
+            
+            if (goals.length === 0) {
+                goalList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">◊</div>
+                        <div>No commitments bound to the Guardians yet...</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const activeGoals = goals.filter(g => g.status === 'active');
+            const completedGoals = goals.filter(g => g.status === 'completed');
+            
+            goalList.innerHTML = [
+                ...activeGoals.map(renderGoal),
+                ...completedGoals.map(renderGoal)
+            ].join('');
+        }
+
+        function renderGoal(goal) {
+            const now = new Date();
+            const deadline = new Date(goal.deadline);
+            const isOverdue = now > deadline && goal.status === 'active';
+            const timeLeft = getTimeUntilDeadline(deadline);
+            const isUrgent = deadline - now < 2 * 60 * 60 * 1000; // 2 hours
+
+            let statusClass = '';
+            if (goal.status === 'completed') statusClass = 'completed';
+            else if (isOverdue) statusClass = 'overdue';
+
+            return `
+                <div class="goal-item ${statusClass}">
+                    <div class="goal-header">
+                        <div class="goal-title">${goal.title}</div>
+                        <div class="goal-meta">
+                            <div class="priority-badge priority-${goal.priority}">${goal.priority}</div>
+                            <div class="goal-deadline ${isOverdue ? 'overdue' : isUrgent ? 'urgent' : ''}">${timeLeft}</div>
+                        </div>
+                    </div>
+                    
+                    ${goal.details ? `<div class="goal-description">${goal.details}</div>` : ''}
+                    
+                    <div class="goal-actions">
+                        ${goal.status === 'active' ? `
+                            <button class="btn btn-success btn-small" onclick="completeGoal(${goal.id})">COMPLETE</button>
+                            <button class="btn btn-secondary btn-small" onclick="extendGoal(${goal.id})">EXTEND</button>
+                        ` : ''}
+                        <button class="btn btn-small" onclick="deleteGoal(${goal.id})">DELETE</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getTimeUntilDeadline(deadline) {
+            const now = new Date();
+            const diff = deadline - now;
+            
+            if (diff < 0) {
+                const overdue = Math.abs(diff);
+                const hours = Math.floor(overdue / (1000 * 60 * 60));
+                const minutes = Math.floor((overdue % (1000 * 60 * 60)) / (1000 * 60));
+                return `OVERDUE ${hours}h ${minutes}m`;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) return `${days}d ${hours}h`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            return `${minutes}m`;
+        }
+
+        function completeGoal(id) {
+            const goal = goals.find(g => g.id === id);
+            if (goal) {
+                goal.status = 'completed';
+                goal.completedAt = new Date();
+                saveGoals();
+                loadGoals();
+                updateStatistics();
+
+                // Guardian celebrations
+                if (settings['aerith-enabled']) {
+                    const message = getRandomMessage(characterResponses.aerith.goal_complete);
+                    addAerithMessage(`Goal completed: "${goal.title}". ${message}`, 'goal_complete');
+                }
+                
+                if (settings['halcron-enabled']) {
+                    addHalcronMessage(`Goal completed: "${goal.title}". Compliance noted. Continue.`, 'goal_complete');
+                }
+
+                showNotification('Goal completed! Well done.', 'success');
+            }
+        }
+
+        function extendGoal(id) {
+            const newDeadline = prompt('Enter new deadline (YYYY-MM-DD HH:MM):');
+            if (newDeadline) {
+                const goal = goals.find(g => g.id === id);
+                if (goal) {
+                    goal.deadline = new Date(newDeadline);
+                    goal.notifications.warned = false;
+                    goal.notifications.overdue = false;
+                    saveGoals();
+                    loadGoals();
+                    
+                    if (settings['halcron-enabled']) {
+                        addHalcronMessage(`Deadline extended for: "${goal.title}". This accommodation will not be repeated.`, 'extension');
+                    }
+                    if (settings['aerith-enabled']) {
+                        addAerithMessage(`Deadline adjusted for: "${goal.title}". Sometimes we need more time, and that's okay.`, 'extension');
+                    }
+
+                    showNotification('Deadline extended', 'info');
+                }
+            }
+        }
+
+        function deleteGoal(id) {
+            if (confirm('Are you sure you want to break this binding?')) {
+                const goal = goals.find(g => g.id === id);
+                goals = goals.filter(g => g.id !== id);
+                saveGoals();
+                loadGoals();
+                updateStatistics();
+                
+                if (settings['halcron-enabled']) {
+                    addHalcronMessage(`Binding broken: "${goal.title}". Weakness documented.`, 'deletion');
+                }
+                if (settings['aerith-enabled']) {
+                    addAerithMessage(`Goal removed: "${goal.title}". Sometimes letting go is the bravest choice.`, 'deletion');
+                }
+
+                showNotification('Goal deleted', 'info');
+            }
+        }
+
+        function refreshGoals() {
+            loadGoals();
+            updateStatistics();
+            showNotification('Goals refreshed', 'info');
+        }
+
+        // Guardian Message System
+        function addHalcronMessage(text, trigger = 'manual') {
+            const message = {
+                text: text,
+                timestamp: new Date().toLocaleString(),
+                trigger: trigger
+            };
+            
+            halcronMessages.unshift(message);
+            if (halcronMessages.length > 50) {
+                halcronMessages = halcronMessages.slice(0, 50);
+            }
+            
+            saveHalcronMessages();
+            loadHalcronMessages();
+            
+            if (settings['halcron-voice']) {
+                speakAsHalcron(text);
+            }
+
+            if (settings['browser-notifications'] && trigger !== 'manual') {
+                sendNotification('Halcron', text);
+            }
+        }
+
+        function addAerithMessage(text, trigger = 'manual') {
+            const message = {
+                text: text,
+                timestamp: new Date().toLocaleString(),
+                trigger: trigger
+            };
+            
+            aerithMessages.unshift(message);
+            if (aerithMessages.length > 50) {
+                aerithMessages = aerithMessages.slice(0, 50);
+            }
+            
+            saveAerithMessages();
+            loadAerithMessages();
+            
+            if (settings['aerith-voice']) {
+                speakAsAerith(text);
+            }
+
+            if (settings['browser-notifications'] && trigger !== 'manual') {
+                sendNotification('Aerith', text);
+            }
+        }
+
+        function loadHalcronMessages() {
+            const container = document.getElementById('halcron-messages');
+            container.innerHTML = halcronMessages.map(msg => `
+                <div class="guardian-message halcron-message">
+                    <div>${msg.text}</div>
+                    <div class="message-meta">
+                        <span class="trigger-tag">${msg.trigger}</span>
+                        <span>${msg.timestamp}</span>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = 0;
+        }
+
+        function loadAerithMessages() {
+            const container = document.getElementById('aerith-messages');
+            container.innerHTML = aerithMessages.map(msg => `
+                <div class="guardian-message aerith-message">
+                    <div>${msg.text}</div>
+                    <div class="message-meta">
+                        <span class="trigger-tag">${msg.trigger}</span>
+                        <span>${msg.timestamp}</span>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = 0;
+        }
+
+        function clearHalcronMessages() {
+            halcronMessages = [];
+            saveHalcronMessages();
+            loadHalcronMessages();
+            addHalcronMessage("Memory purged. Monitoring continues.", 'system');
+        }
+
+        function clearAerithMessages() {
+            aerithMessages = [];
+            saveAerithMessages();
+            loadAerithMessages();
+            addAerithMessage("A fresh start, dear one. I'm still here with you.", 'system');
+        }
+
+        function getRandomMessage(messageArray) {
+            return messageArray[Math.floor(Math.random() * messageArray.length)];
+        }
+
+        // Settings Management
+        function toggleSetting(setting) {
+            settings[setting] = !settings[setting];
+            const toggle = document.getElementById(`toggle-${setting}`);
+            
+            if (settings[setting]) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+            
+            saveSettings();
+            showNotification(`${setting.replace('-', ' ')} ${settings[setting] ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        function loadSettings() {
+            Object.keys(settings).forEach(key => {
+                const toggle = document.getElementById(`toggle-${key}`);
+                if (toggle && settings[key]) {
+                    toggle.classList.add('active');
+                }
+            });
+        }
+
+        // Guardian Watch System
+        function startGuardianWatch() {
+            // Main monitoring loop
+            setInterval(() => {
+                checkDeadlines();
+                checkInactivity();
+                updateSystemStatus();
+            }, 60000); // Check every minute
+            
+            // Morning check-in
+            setInterval(() => {
+                const now = new Date();
+                if (now.getHours() === 8 && now.getMinutes() === 0 && settings['aerith-morning']) {
+                    sendMorningCheckIn();
+                }
+            }, 60000);
+
+            // Initial check
+            setTimeout(() => {
+                checkDeadlines();
+                updateSystemStatus();
+            }, 5000);
+        }
+
+        function checkDeadlines() {
+            const now = new Date();
+            const activeGoals = goals.filter(g => g.status === 'active');
+            
+            activeGoals.forEach(goal => {
+                const deadline = new Date(goal.deadline);
+                const timeUntil = deadline - now;
+                
+                // Overdue handling
+                if (timeUntil < 0 && !goal.notifications.overdue) {
+                    goal.notifications.overdue = true;
+                    
+                    if (settings['halcron-enabled']) {
+                        const message = getRandomMessage(characterResponses.halcron.overdue);
+                        addHalcronMessage(`DEADLINE MISSED: "${goal.title}". ${message}`, 'missed_goal');
+                    }
+                    
+                    saveGoals();
+                }
+                
+                // Warning notifications based on priority
+                const warningTime = getWarningTime(goal.priority);
+                if (timeUntil > 0 && timeUntil <= warningTime && !goal.notifications.warned) {
+                    goal.notifications.warned = true;
+                    
+                    if (settings['halcron-enabled'] && goal.priority !== 'low') {
+                        const message = getRandomMessage(characterResponses.halcron.warning);
+                        addHalcronMessage(`WARNING: "${goal.title}" deadline approaching. ${message}`, 'warning');
+                    }
+                    
+                    if (settings['aerith-enabled']) {
+                        const message = getRandomMessage(characterResponses.aerith.encouragement);
+                        addAerithMessage(`Gentle reminder: "${goal.title}" deadline approaching. ${message}`, 'encouragement');
+                    }
+                    
+                    saveGoals();
+                }
+            });
+        }
+
+        function getWarningTime(priority) {
+            switch (priority) {
+                case 'critical': return 30 * 60 * 1000; // 30 minutes
+                case 'high': return 60 * 60 * 1000; // 1 hour
+                case 'medium': return 3 * 60 * 60 * 1000; // 3 hours
+                case 'low': return 6 * 60 * 60 * 1000; // 6 hours
+                default: return 60 * 60 * 1000;
+            }
+        }
+
+        function checkInactivity() {
+            if (!settings['halcron-inactivity']) return;
+
+            const lastActivity = new Date(localStorage.getItem('last-activity') || Date.now());
+            const now = new Date();
+            const inactiveTime = now - lastActivity;
+            
+            // If inactive for more than 4 hours during working hours
+            if (inactiveTime > 4 * 60 * 60 * 1000 && now.getHours() >= 9 && now.getHours() <= 18) {
+                const today = new Date().toDateString();
+                if (localStorage.getItem('inactivity-warned-today') !== today) {
+                    const message = getRandomMessage(characterResponses.halcron.inactivity);
+                    addHalcronMessage(`INACTIVITY DETECTED: ${message}`, 'inactivity');
+                    localStorage.setItem('inactivity-warned-today', today);
+                }
+            }
+        }
+
+        function sendMorningCheckIn() {
+            if (settings['aerith-enabled']) {
+                const message = getRandomMessage(characterResponses.aerith.daily_checkin);
+                addAerithMessage(`Good morning, dear one. ${message}`, 'daily_checkin');
+            }
+        }
+
+        function updateSystemStatus() {
+            const activeGoals = goals.filter(g => g.status === 'active').length;
+            const overdueGoals = goals.filter(g => g.status === 'active' && new Date() > new Date(g.deadline)).length;
+            
+            let status = 'READY';
+            if (overdueGoals > 0) {
+                status = `${overdueGoals} OVERDUE`;
+            } else if (activeGoals > 0) {
+                status = `MONITORING ${activeGoals}`;
+            }
+            
+            document.getElementById('system-status').textContent = status;
+        }
+
+        function updateStatistics() {
+            const activeGoals = goals.filter(g => g.status === 'active').length;
+            const completedGoals = goals.filter(g => g.status === 'completed').length;
+            const overdueGoals = goals.filter(g => g.status === 'active' && new Date() > new Date(g.deadline)).length;
+            const totalGoals = goals.length;
+            const successRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
+
+            document.getElementById('stat-active').textContent = activeGoals;
+            document.getElementById('stat-completed').textContent = completedGoals;
+            document.getElementById('stat-overdue').textContent = overdueGoals;
+            document.getElementById('stat-success-rate').textContent = `${successRate}%`;
+        }
+
+        // Voice Synthesis
+        function speakAsHalcron(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.6;
+                utterance.pitch = 0.3;
+                utterance.volume = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakAsAerith(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.2;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Notifications
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showNotification('Notifications enabled', 'success');
+                    }
+                });
+            }
+        }
+
+        function sendNotification(title, body) {
+            if (settings['browser-notifications'] && 'Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23cc1111"/></svg>',
+                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23cc1111"/></svg>'
+                });
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <div style="color: ${type === 'success' ? 'var(--success-green)' : type === 'error' ? 'var(--halcron-red)' : 'var(--bone-white)'};">
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Testing Functions
+        function testHalcron() {
+            const message = getRandomMessage(characterResponses.halcron.warning);
+            addHalcronMessage(`System test: ${message}`, 'test');
+        }
+
+        function testAerith() {
+            const message = getRandomMessage(characterResponses.aerith.encouragement);
+            addAerithMessage(`System test: ${message}`, 'test');
+        }
+
+        function testCommunication() {
+            testHalcron();
+            setTimeout(() => testAerith(), 1000);
+        }
+
+        // Data Persistence
+        function saveGoals() {
+            localStorage.setItem('guardian-goals', JSON.stringify(goals));
+        }
+
+        function saveSettings() {
+            localStorage.setItem('guardian-settings', JSON.stringify(settings));
+        }
+
+        function saveHalcronMessages() {
+            localStorage.setItem('halcron-messages', JSON.stringify(halcronMessages));
+        }
+
+        function saveAerithMessages() {
+            localStorage.setItem('aerith-messages', JSON.stringify(aerithMessages));
+        }
+
+        function loadMessages() {
+            loadHalcronMessages();
+            loadAerithMessages();
+        }
+
+        // API Integration Hooks (for backend connection)
+        class GuardianAPI {
+            static async createGoal(goalData) {
+                // POST /api/goals
+                console.log('API: Creating goal', goalData);
+                return { success: true, id: Date.now() };
+            }
+
+            static async updateGoal(id, updates) {
+                // PATCH /api/goals/:id
+                console.log('API: Updating goal', id, updates);
+                return { success: true };
+            }
+
+            static async deleteGoal(id) {
+                // DELETE /api/goals/:id
+                console.log('API: Deleting goal', id);
+                return { success: true };
+            }
+
+            static async getCharacterResponse(trigger, context) {
+                // GET /api/character-response?trigger=missed_goal
+                console.log('API: Getting character response', trigger, context);
+                return { halcron: 'Static response', aerith: 'Gentle response' };
+            }
+
+            static async logMessage(character, message, trigger) {
+                // POST /api/log-response
+                console.log('API: Logging message', character, message, trigger);
+                return { success: true };
+            }
+
+            static async sendSMS(phoneNumber, message, character) {
+                // POST /api/send-sms
+                console.log('API: Sending SMS', phoneNumber, message, character);
+                return { success: true };
+            }
+
+            static async makeCall(phoneNumber, message, character) {
+                // POST /api/make-call
+                console.log('API: Making call', phoneNumber, message, character);
+                return { success: true };
+            }
+        }
+
+        // Manifest for PWA
+        const manifest = {
+            name: "Timeline Guardian",
+            short_name: "Guardian",
+            start_url: "/",
+            display: "standalone",
+            background_color: "#0a0a0a",
+            theme_color: "#cc1111",
+            icons: [
+                {
+                    src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23cc1111'/></svg>",
+                    sizes: "192x192",
+                    type: "image/svg+xml"
+                }
+            ]
+        };
+
+        document.getElementById('manifest').href = 'data:application/json,' + encodeURIComponent(JSON.stringify(manifest));
+
+        // Debug logging
+        console.log('Timeline Guardian System Ready');
+        console.log('Goals:', goals.length);
+        console.log('Settings:', settings);
+    </script>
+</body>
+</html>
